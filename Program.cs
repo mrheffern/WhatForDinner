@@ -1,0 +1,338 @@
+﻿// See https://aka.ms/new-console-template for more information
+using System.Data.SQLite;
+
+
+class WhatsForDinner
+{
+    static void Main()
+
+
+
+    {
+        bool running = true;
+        Console.WriteLine("\nWelcome to your own personal cookbook!\n");
+
+        while (running)
+        {
+            DisplayMenu();
+            var input = System.Console.ReadLine();
+
+            switch (input)
+            {
+                case "1":
+                    ViewRecipes();
+                    break;
+                case "2":
+                    DisplayRecipe();
+                    break;
+                case "3":
+                    AddRecipes();
+                    break;
+                case "4":
+                    EditRecipe();
+                    break;
+                case "5":
+                    DeleteRecipe();
+                    break;
+                case "6":
+                    running = false;
+                    break;
+                default:
+                    System.Console.WriteLine("\n");
+                    System.Console.WriteLine("Please enter a valid selection!");
+                    System.Console.WriteLine("\n");
+                    break;
+            }
+        }
+    }
+
+    static void DisplayMenu()
+    {
+        Console.WriteLine("Menu:");
+        Console.WriteLine("1. View Recipes");
+        Console.WriteLine("2. Display Specific Recipe");
+        Console.WriteLine("3. Add Recipe");
+        Console.WriteLine("4. Edit Recipe");
+        Console.WriteLine("5. Delete Recipe");
+        Console.WriteLine("6. Exit");
+    }
+
+    static void DisplayRecipe()
+    {
+        System.Console.WriteLine("Please select a method to search for a recipe to edit:");
+        System.Console.WriteLine("1. Name\n2. ID");
+
+        String searchMethodString = System.Console.ReadLine();
+        int searchMethod = int.Parse(searchMethodString);
+
+        // ask user for search input
+        System.Console.WriteLine("Please enter the search value:");
+        String searchValue = System.Console.ReadLine();
+
+
+        using (SQLiteConnection connection = new SQLiteConnection("Data Source=WhatsForDinner.db; version=3;"))
+        {
+            connection.Open();
+
+            String query = "SELECT * FROM recipes WHERE ";
+
+            if (searchMethod == 1)
+            {
+                query += "name = @searchValue";
+            }
+            else if (searchMethod == 2)
+            {
+                query += "id = @searchValue";
+            }
+
+            using (SQLiteCommand command = new SQLiteCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@searchValue", searchValue);
+
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        reader.Read();
+                        int id = Convert.ToInt32(reader["id"]);
+                        String name = (String)reader["name"];
+                        String instructions = (String)reader["instructions"];
+                        int time = Convert.ToInt32(reader["time"]);
+                        String type = (String)reader["type"];
+
+                        System.Console.WriteLine("ID: " + id);
+                        System.Console.WriteLine("Name: " + name);
+                        System.Console.WriteLine("Instructions:\n" + instructions);
+                        System.Console.WriteLine("Mintues to Make: " + time);
+                        System.Console.WriteLine("Type: " + type);
+                    }
+                    else
+                    {
+                        System.Console.WriteLine("No such recipe found");
+                    }
+                }
+            }
+
+        }
+    }
+
+    static void ViewRecipes()
+    {
+        // fetch data from database
+        using (SQLiteConnection connection = new SQLiteConnection("Data Source=WhatsForDinner.db; version=3;"))
+        {
+            connection.Open();
+            using (SQLiteCommand command = new SQLiteCommand("SELECT * FROM recipes", connection))
+            {
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        System.Console.WriteLine("\n");
+                        while (reader.Read())
+                        {
+                            System.Console.WriteLine("ID: " + reader["id"] + " Name: " + reader["name"] + " Instructions: " + reader["instructions"]);
+                        }
+                        System.Console.WriteLine("Press enter to continue");
+                        System.Console.ReadLine();
+                        System.Console.WriteLine("\n\n\n");
+                    }
+                    else{
+                        System.Console.WriteLine("No rows found :(");
+                    }
+                }
+            }
+        }
+    }
+
+    static void AddRecipes()
+    {
+        string name;
+        string instructions;
+        string timeString;
+        string type;
+
+        // get recipe info from user
+        System.Console.WriteLine("\nPlease enter the name of the recipe: ");
+        name = System.Console.ReadLine();
+
+        System.Console.WriteLine("\nPlease enter the instructions for the recipes: ");
+        instructions = System.Console.ReadLine();
+
+        System.Console.WriteLine("\nPlease enter the time need to make as a positive integer in minutes: ");
+        timeString = System.Console.ReadLine();
+        int time = int.Parse(timeString);
+
+        System.Console.WriteLine("\nPlease enter the type of recipe this is (Breakfast, Lunch, Dinner, Refreshment): ");
+        type = System.Console.ReadLine();
+
+        // write recipe to db
+
+        using (SQLiteConnection connection = new SQLiteConnection("Data Source=WhatsForDinner.db; version=3;"))
+        {
+            connection.Open();
+            using (SQLiteCommand command = new SQLiteCommand("INSERT INTO recipes(name,instructions,time,type) VALUES(@name, @instructions, @time, @type)", connection))
+            {
+                command.Parameters.AddWithValue("@name", name);
+                command.Parameters.AddWithValue("@instructions", instructions);
+                command.Parameters.AddWithValue("@time", time);
+                command.Parameters.AddWithValue("@type", type);
+
+                int rowsReturned = command.ExecuteNonQuery();
+                
+                if (rowsReturned > 0)
+                {
+                    System.Console.WriteLine("Recipe successfully added!");
+                }
+                else 
+                {
+                    System.Console.WriteLine("Recipe failed to add.");
+                }
+            }
+        }
+    }
+
+    static void EditRecipe()
+    {
+        // ask user to search by name or id
+        System.Console.WriteLine("Please select a method to search for a recipe to edit:");
+        System.Console.WriteLine("1. Name\n2. ID");
+
+        String searchMethodString = System.Console.ReadLine();
+        int searchMethod = int.Parse(searchMethodString);
+
+        // ask user for search input
+        System.Console.WriteLine("Please enter the search value:");
+        String searchValue = System.Console.ReadLine();
+
+
+        // fetch recipe
+        using (SQLiteConnection connection = new SQLiteConnection("Data Source=WhatsForDinner.db; version=3;"))
+        {
+            connection.Open();
+            System.Console.WriteLine("connection: " + connection);
+            String query = "SELECT * FROM recipes ";
+
+            if (searchMethod == 1)
+            {
+                query += "WHERE name = @searchValue";
+            }
+            else if (searchMethod == 2)
+            {
+                query += "WHERE id = @searchValue";
+            }
+
+            using (SQLiteCommand command = new SQLiteCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@searchValue", searchValue);
+
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        reader.Read();
+                        int id = Convert.ToInt32(reader["id"]);
+                        String existingName = (String)reader["name"];
+                        String existingInstructions = (String)reader["instructions"];
+                        int existingTime = Convert.ToInt32(reader["time"]);
+                        String existingType = (String)reader["type"];
+
+                        System.Console.WriteLine("Please enter desired updates. To keep existing value, just press enter");
+
+                        System.Console.WriteLine("Please enter an updated name. Existing name: " + existingName);
+                        String newName = System.Console.ReadLine();
+                        if (newName == "")
+                        {
+                            newName = existingName;
+                        }
+
+                        System.Console.WriteLine("\nPlease enter updated instructions. Existing instructions: " + existingInstructions);
+                        String newInstructions = System.Console.ReadLine();
+                        if (newInstructions == "")
+                        {
+                            newInstructions = existingInstructions;
+                        }
+
+                        System.Console.WriteLine("\nPlease enter an updated time. Existing time: " + existingTime);
+                        String newTimeString = System.Console.ReadLine();
+                        int newTime;
+                        if (newTimeString == "")
+                        {
+                            newTime = existingTime;
+                        }
+                        else
+                        {
+                            newTime = int.Parse(newTimeString);
+                        }
+
+                        System.Console.WriteLine("\nPlease enter an updated type. Existing type: " + existingType);
+                        String newType = System.Console.ReadLine();
+                        if (newType == "")
+                        {
+                            newType = existingType;
+                        }
+
+                        using (SQLiteCommand updateCommand = new SQLiteCommand("UPDATE recipes SET name = @newName, instructions = @newInstructions, time = @newTime, type = @newType WHERE id = @id", connection))
+                        {
+                            updateCommand.Parameters.AddWithValue("@id", id);
+                            updateCommand.Parameters.AddWithValue("@newName", newName);
+                            updateCommand.Parameters.AddWithValue("@newInstructions", newInstructions);
+                            updateCommand.Parameters.AddWithValue("@newTime", newTime);
+                            updateCommand.Parameters.AddWithValue("@newType", newType);
+
+                            int rows = updateCommand.ExecuteNonQuery();
+
+                            if (rows > 0)
+                            {
+                                System.Console.WriteLine("Recipe successfully updated!");
+                            } 
+                            else
+                            {
+                                System.Console.WriteLine("Failed to update recipe");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        System.Console.WriteLine("Recipe could not be found");
+                    }
+                }
+            }
+        }
+
+        // craft updated recipe
+    }
+
+    static void DeleteRecipe()
+    {
+        // ask user for ID to delete
+        System.Console.WriteLine("Please enter the ID of the recipe you want to delete: ");
+        int deleteID = int.Parse(System.Console.ReadLine());
+
+        using (SQLiteConnection connection = new SQLiteConnection("Data Source=WhatsForDinner.db; version=3;"))
+        {
+            connection.Open();
+            String deleteCommand = "DELETE FROM recipes WHERE id = @id";
+            using (SQLiteCommand command = new SQLiteCommand(deleteCommand, connection))
+            {
+                command.Parameters.AddWithValue("@id", deleteID);
+
+                int rows = command.ExecuteNonQuery();
+
+                if (rows > 0)
+                {
+                    System.Console.WriteLine("Delete successful!");
+                }
+                else
+                {
+                    System.Console.WriteLine("Delete was not successful");
+                }
+            }
+        }
+        // delete recipe 
+
+
+        // give user confirmation
+    }
+}
+

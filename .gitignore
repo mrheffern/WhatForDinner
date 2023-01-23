@@ -1,0 +1,11 @@
+bin/
+obj/
+*.dll
+*.exe
+*.sln
+*.suo
+*.user
+packages/
+*.log
+*.temp
+*.secret
