@@ -5,12 +5,10 @@ using System.Data.SQLite;
 class WhatsForDinner
 {
     static void Main()
-
-
-
     {
+        InitializeDatabase();
         bool running = true;
-        Console.WriteLine("\nWelcome to your own personal cookbook!\n");
+        Console.WriteLine("\nWelcome to your own personal cookbook!");
 
         while (running)
         {
@@ -46,9 +44,40 @@ class WhatsForDinner
         }
     }
 
+    static void InitializeDatabase()
+    {
+        String databaseFile = "WhatsForDinner.db";
+        if (!File.Exists(databaseFile))
+        {
+            using (SQLiteConnection connection = new SQLiteConnection("Data Source=WhatsForDinner.db; version=3;"))
+            {
+                connection.Open();
+                String createTableCommand = @"CREATE TABLE recipes (
+                    id	INTEGER NOT NULL UNIQUE PRIMARY KEY AUTOINCREMENT,
+                    name	TEXT NOT NULL UNIQUE,
+                    instructions	TEXT NOT NULL,
+                    time	INTEGER NOT NULL,
+                    type	TEXT NOT NULL)";
+
+                using (SQLiteCommand command = new SQLiteCommand(createTableCommand, connection))
+                {
+                    int rows = command.ExecuteNonQuery();
+
+                    if (rows == 0)
+                    {
+                        System.Console.WriteLine("Database created!");
+                    }
+                    else if (rows < 0)
+                    {
+                        System.Console.WriteLine("Failed to create database");
+                    }
+                }
+            }
+        }
+    }
     static void DisplayMenu()
     {
-        Console.WriteLine("Menu:");
+        Console.WriteLine("\nMenu:");
         Console.WriteLine("1. View Recipes");
         Console.WriteLine("2. Display Specific Recipe");
         Console.WriteLine("3. Add Recipe");
@@ -135,10 +164,9 @@ class WhatsForDinner
                         }
                         System.Console.WriteLine("Press enter to continue");
                         System.Console.ReadLine();
-                        System.Console.WriteLine("\n\n\n");
                     }
                     else{
-                        System.Console.WriteLine("No rows found :(");
+                        System.Console.WriteLine("\nNo rows found :(");
                     }
                 }
             }
@@ -182,11 +210,11 @@ class WhatsForDinner
                 
                 if (rowsReturned > 0)
                 {
-                    System.Console.WriteLine("Recipe successfully added!");
+                    System.Console.WriteLine("\nRecipe successfully added!");
                 }
                 else 
                 {
-                    System.Console.WriteLine("Recipe failed to add.");
+                    System.Console.WriteLine("\nRecipe failed to add.");
                 }
             }
         }
