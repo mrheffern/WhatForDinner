@@ -94,7 +94,6 @@ class WhatsForDinner
         String searchMethodString = System.Console.ReadLine();
         int searchMethod = int.Parse(searchMethodString);
 
-        // ask user for search input
         System.Console.WriteLine("Please enter the search value:");
         String searchValue = System.Console.ReadLine();
 
@@ -147,7 +146,6 @@ class WhatsForDinner
 
     static void ViewRecipes()
     {
-        // fetch data from database
         using (SQLiteConnection connection = new SQLiteConnection("Data Source=WhatsForDinner.db; version=3;"))
         {
             connection.Open();
@@ -180,7 +178,6 @@ class WhatsForDinner
         string timeString;
         string type;
 
-        // get recipe info from user
         System.Console.WriteLine("\nPlease enter the name of the recipe: ");
         name = System.Console.ReadLine();
 
@@ -193,8 +190,6 @@ class WhatsForDinner
 
         System.Console.WriteLine("\nPlease enter the type of recipe this is (Breakfast, Lunch, Dinner, Refreshment): ");
         type = System.Console.ReadLine();
-
-        // write recipe to db
 
         using (SQLiteConnection connection = new SQLiteConnection("Data Source=WhatsForDinner.db; version=3;"))
         {
@@ -222,19 +217,15 @@ class WhatsForDinner
 
     static void EditRecipe()
     {
-        // ask user to search by name or id
         System.Console.WriteLine("Please select a method to search for a recipe to edit:");
         System.Console.WriteLine("1. Name\n2. ID");
 
         String searchMethodString = System.Console.ReadLine();
         int searchMethod = int.Parse(searchMethodString);
 
-        // ask user for search input
         System.Console.WriteLine("Please enter the search value:");
         String searchValue = System.Console.ReadLine();
 
-
-        // fetch recipe
         using (SQLiteConnection connection = new SQLiteConnection("Data Source=WhatsForDinner.db; version=3;"))
         {
             connection.Open();
@@ -327,13 +318,10 @@ class WhatsForDinner
                 }
             }
         }
-
-        // craft updated recipe
     }
 
     static void DeleteRecipe()
     {
-        // ask user for ID to delete
         System.Console.WriteLine("Please enter the ID of the recipe you want to delete: ");
         int deleteID = int.Parse(System.Console.ReadLine());
 
@@ -357,10 +345,6 @@ class WhatsForDinner
                 }
             }
         }
-        // delete recipe 
-
-
-        // give user confirmation
     }
 }
 
