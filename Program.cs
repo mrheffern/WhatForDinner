@@ -75,6 +75,7 @@ class WhatsForDinner
             }
         }
     }
+    
     static void DisplayMenu()
     {
         Console.WriteLine("\nMenu:");
@@ -88,13 +89,13 @@ class WhatsForDinner
 
     static void DisplayRecipe()
     {
-        System.Console.WriteLine("Please select a method to search for a recipe to edit:");
+        System.Console.WriteLine("\nPlease select a method to search for a recipe to edit:");
         System.Console.WriteLine("1. Name\n2. ID");
 
         String searchMethodString = System.Console.ReadLine();
         int searchMethod = int.Parse(searchMethodString);
 
-        System.Console.WriteLine("Please enter the search value:");
+        System.Console.WriteLine("\nPlease enter the search value:");
         String searchValue = System.Console.ReadLine();
 
 
@@ -128,11 +129,13 @@ class WhatsForDinner
                         int time = Convert.ToInt32(reader["time"]);
                         String type = (String)reader["type"];
 
-                        System.Console.WriteLine("ID: " + id);
+                        System.Console.WriteLine("\nID: " + id);
                         System.Console.WriteLine("Name: " + name);
                         System.Console.WriteLine("Instructions:\n" + instructions);
                         System.Console.WriteLine("Mintues to Make: " + time);
                         System.Console.WriteLine("Type: " + type);
+                        System.Console.WriteLine("\nPress enter to continue:");
+                        System.Console.ReadLine();
                     }
                     else
                     {
@@ -160,7 +163,7 @@ class WhatsForDinner
                         {
                             System.Console.WriteLine("ID: " + reader["id"] + " Name: " + reader["name"] + " Instructions: " + reader["instructions"]);
                         }
-                        System.Console.WriteLine("Press enter to continue");
+                        System.Console.WriteLine("\nPress enter to continue");
                         System.Console.ReadLine();
                     }
                     else{
