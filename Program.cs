@@ -220,19 +220,18 @@ class WhatsForDinner
 
     static void EditRecipe()
     {
-        System.Console.WriteLine("Please select a method to search for a recipe to edit:");
+        System.Console.WriteLine("\nPlease select a method to search for a recipe to edit:");
         System.Console.WriteLine("1. Name\n2. ID");
 
         String searchMethodString = System.Console.ReadLine();
         int searchMethod = int.Parse(searchMethodString);
 
-        System.Console.WriteLine("Please enter the search value:");
+        System.Console.WriteLine("\nPlease enter the search value:");
         String searchValue = System.Console.ReadLine();
 
         using (SQLiteConnection connection = new SQLiteConnection("Data Source=WhatsForDinner.db; version=3;"))
         {
             connection.Open();
-            System.Console.WriteLine("connection: " + connection);
             String query = "SELECT * FROM recipes ";
 
             if (searchMethod == 1)
@@ -259,7 +258,7 @@ class WhatsForDinner
                         int existingTime = Convert.ToInt32(reader["time"]);
                         String existingType = (String)reader["type"];
 
-                        System.Console.WriteLine("Please enter desired updates. To keep existing value, just press enter");
+                        System.Console.WriteLine("\nPlease enter desired updates. To keep existing value, just press enter");
 
                         System.Console.WriteLine("Please enter an updated name. Existing name: " + existingName);
                         String newName = System.Console.ReadLine();
@@ -268,14 +267,14 @@ class WhatsForDinner
                             newName = existingName;
                         }
 
-                        System.Console.WriteLine("\nPlease enter updated instructions. Existing instructions: " + existingInstructions);
+                        System.Console.WriteLine("Please enter updated instructions. Existing instructions: " + existingInstructions);
                         String newInstructions = System.Console.ReadLine();
                         if (newInstructions == "")
                         {
                             newInstructions = existingInstructions;
                         }
 
-                        System.Console.WriteLine("\nPlease enter an updated time. Existing time: " + existingTime);
+                        System.Console.WriteLine("Please enter an updated time. Existing time: " + existingTime);
                         String newTimeString = System.Console.ReadLine();
                         int newTime;
                         if (newTimeString == "")
@@ -287,7 +286,7 @@ class WhatsForDinner
                             newTime = int.Parse(newTimeString);
                         }
 
-                        System.Console.WriteLine("\nPlease enter an updated type. Existing type: " + existingType);
+                        System.Console.WriteLine("Please enter an updated type. Existing type: " + existingType);
                         String newType = System.Console.ReadLine();
                         if (newType == "")
                         {
@@ -306,17 +305,17 @@ class WhatsForDinner
 
                             if (rows > 0)
                             {
-                                System.Console.WriteLine("Recipe successfully updated!");
+                                System.Console.WriteLine("\nRecipe successfully updated!");
                             } 
                             else
                             {
-                                System.Console.WriteLine("Failed to update recipe");
+                                System.Console.WriteLine("\nFailed to update recipe");
                             }
                         }
                     }
                     else
                     {
-                        System.Console.WriteLine("Recipe could not be found");
+                        System.Console.WriteLine("\nRecipe could not be found");
                     }
                 }
             }
@@ -325,7 +324,7 @@ class WhatsForDinner
 
     static void DeleteRecipe()
     {
-        System.Console.WriteLine("Please enter the ID of the recipe you want to delete: ");
+        System.Console.WriteLine("\nPlease enter the ID of the recipe you want to delete: ");
         int deleteID = int.Parse(System.Console.ReadLine());
 
         using (SQLiteConnection connection = new SQLiteConnection("Data Source=WhatsForDinner.db; version=3;"))
@@ -340,11 +339,11 @@ class WhatsForDinner
 
                 if (rows > 0)
                 {
-                    System.Console.WriteLine("Delete successful!");
+                    System.Console.WriteLine("\nDelete successful!");
                 }
                 else
                 {
-                    System.Console.WriteLine("Delete was not successful");
+                    System.Console.WriteLine("\nDelete was not successful");
                 }
             }
         }
